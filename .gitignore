@@ -1,23 +1,75 @@
-docs/doxygen/html
-docs/doxygen/latex
-xcuserdata/
+make/
+obj/
 build/
-x64/
-.vs/
+JuceLibraryCode/
+externals/JUCE/
+externals/VST3_SDK
+externals/VST_SDK
+externals/VST2_SDK
+externals/Projucer
+externals/modules
+lib/
+*.zip
 *.DS_Store
-*idea/
+.idea/
 cmake-build-debug/
 cmake-build-release/
-*.db
-dependencies/Win64/lib/saf_mkl_custom.lib
-dependencies/Win64/lib/libiomp5md.lib
-*.c~
-*.m~
-*.h~
-*.cpp~
-*.hpp~
-*.zip
-*.mexmaci64
-*.mexa64
-*.mexw64
-saf_doxygen.tag
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+*.VC.db-shm
+*.VC.db-wal
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+*.obj
+*.tlog
+*.log
+build/

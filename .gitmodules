@@ -1,0 +1,6 @@
+[submodule "externals/Spatial_Audio_Framework"]
+	path = externals/Spatial_Audio_Framework
+	url = https://github.com/leomccormack/Spatial_Audio_Framework.git
+[submodule "externals/JUCE"]
+	path = externals/JUCE
+	url = https://github.com/juce-framework/JUCE.git
