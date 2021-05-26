@@ -8,7 +8,7 @@ The developed technologies rely on the use of sensor arrays to capture the surro
 
 For the project described in [1], ultrasonic sound sources, which are inaudible to humans, were captured using a 6-sensor ultrasonic microphone array. This microphone array was then mounted to the headphones worn by the user, and the estimated DoAs were used to appropriately reproduce a pitch-shifted signal (down ~3octaves) over the headphone channels. Through this device, the user can not only perceive the captured ultrasonic sound sources (such as sound produced by bats or leaking pipes), but they can also localise these sources in the correct direction.
 
-<img src="Ultrasonic-Super-Hearing/images/UltrasonicArray.jpg" alt="UltrasonicArray" width="200"/>
+<img src="Ultrasonic-Super-Hearing/images/UltrasonicArray.png" alt="UltrasonicArray" width="450"/>
 
 [**Video Demo**]()
 
@@ -18,7 +18,7 @@ For the project described in [1], ultrasonic sound sources, which are inaudible 
 
 In [2], underwater sound sources, which are audible to humans but are typically localised very poorly, were captured by a 4-sensor hydrophone array. Since humans primarily evolved in the air domain, humans are generally much worse at localising sound sources in other mediums; such as underwater. However, by capturing underwater sound sources with a hydrophone array, and reproducing the sources in the analysed DoAs using head-related transfer functions (HRIRs) measured in air, it is possible for the listener to correctly localise these underwater sound sources.
 
-<img src="Underwater-Super-Hearing/images/HydrophoneArray_GoPro.jpg" alt="HydrophoneArray_GoPro" width="200"/>
+<img src="Underwater-Super-Hearing/images/HydrophoneArray_GoPro.jpg" alt="HydrophoneArray_GoPro" width="450"/>
 
 [**Video Demo**](https://www.youtube.com/watch?v=3WARepl3lEg)
 
@@ -26,18 +26,16 @@ In [2], underwater sound sources, which are audible to humans but are typically 
 
 ## Building the plugins
 
-Pre-compiled plugins are made available in the "Releases" tab on GitHub. Note that these plugins also require installation of the [SPARTA suite](http://research.spa.aalto.fi/projects/sparta_vsts/), as this also installs some run-time dependencies.
-
-However, if you wish to instead build the plugins yourself, then you may do so by first cloning the repository with:
+If you wish to build the plugins, then you must first clone the repository with:
 ```
 git clone --recursive https://github.com/leomccormack/Super-Hearing
 # or if you have already cloned the repository, update with
 git submodule update --init --recursive
 ```
 
-The [VST2_SDK](https://web.archive.org/web/20181016150224/https://download.steinberg.net/sdk_downloads/vstsdk3610_11_06_2018_build_37.zip) should then be placed in the 'SDKs' folder like so:
+The [VST2_SDK](https://web.archive.org/web/20181016150224/https://download.steinberg.net/sdk_downloads/vstsdk3610_11_06_2018_build_37.zip) should then be placed in the 'externals' folder like so:
 ```
-SDKs/VST2_SDK
+externals/VST2_SDK
 ```
 
 **MacOSX, Linux and Windows (x86_64/amd64)** users must install a custom Intel MKL library. Detailed instructions on how to do this can be found [here](https://github.com/leomccormack/Spatial_Audio_Framework/blob/master/dependencies/PERFORMANCE_LIBRARY_INSTRUCTIONS.md). 

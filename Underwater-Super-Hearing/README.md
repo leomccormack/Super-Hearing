@@ -1,6 +1,6 @@
 # Underwater-Super-Hearing
 
-Ever noticed that when you put your head underwater in a swimming pool, it is incredibly difficult to localise sound sources? This is largely due to the fact that the speed of sound in water is significantly faster than in air. The interaural time differences are much shorter, and the manner in which sound waves physically interact with the geometry of your head and pinna is very different. Since humans have primarily evolved to interpret spatial hearing cues produced by sound sources in air, we are generally not very well accustomed to interpreting them when underwater.
+Have you ever noticed that when you put your head underwater in a swimming pool, it is incredibly difficult to localise sound sources? This is largely due to the fact that the speed of sound in water is significantly faster than in air. The interaural time differences are much shorter, and the manner in which sound waves physically interact with the geometry of your head and pinna is very different. Since humans have primarily evolved to interpret spatial hearing cues produced by sound sources in air, we are generally not very well accustomed to interpreting them when underwater.
 
 However, if one were to record the underwater sound scene using a hydrophone array, determine the directions of underwater sound sources, and subsequently use this information to reproduce the signals based on head-related transfer functions (HRIRs) measured in air, then the appropriate spatial hearing cues can be delivered to the listener.
 
@@ -10,13 +10,13 @@ The CAD files and drawings used for 3D printing the hydrophone clamps and for bu
 
 Note that commercially available hydrophone sensors are usually physically larger than the sensors you would typically find in a 4 sensor A-format microphone array. However, since the speed of sound is around 4-5 times faster in water than in air, their effective size is similar, if not smaller. Therefore, the radius of the hydrophone array built for [1] was also made larger than a comparable air domain microphone array for this same reason.
 
-<img src="images/HydrophoneArray_GoPro.jpg" alt="HydrophoneArray_GoPro" width="200"/>
+<img src="images/HydrophoneArray_GoPro.jpg" alt="HydrophoneArray_GoPro" width="450"/>
 
 ## Auralising the captured underwater sound scene
 
 The parametric binaural renderer (hodirac_binaural VST plug-in) used for this study can be freely downloaded from [**here**](http://research.spa.aalto.fi/projects/sparta_vsts/), and is detailed further in [2]. It requires first converting the hydrophone signals into first-order Ambisonic (FOA) signals, using, for example, the sparta_array2SH VST plug-in. 
 
-The decoder [2] then uses this FOA input to analyse the directions of sound sources in frequency bands, and subsequently use this information to reproduce the captured sound scene over headphones. If the employed HRIRs for the rendering stage were measured in air, then one should be able to appropriately localise the underwater sound sources. This is demonstrated in the following video:
+The decoder [2] then uses this FOA input to analyse the directions of sound sources in frequency bands, and subsequently use this information to reproduce the captured sound scene over headphones. If the employed HRIRs for the rendering stage are measured in the air domain, then the correct spatial cues will be delivered to the listener; thus, allowing them to localise the underwater sound sources. This processing is demonstrated in the following video:
 
 [![Underwater binaural reproduction](https://img.youtube.com/vi/3WARepl3lEg/0.jpg)](https://www.youtube.com/watch?v=3WARepl3lEg)
 (Please wear headphones)
