@@ -8,7 +8,7 @@ However, if one were to record the underwater sound scene using a hydrophone arr
 
 The CAD files and drawings used for 3D printing the hydrophone clamps and for building the tetrahedral hydrophone array, employed for the study detailed in [1], can be found in the [**hardware**](hardware) folder. Further details regarding its construction can be found in the paper.
 
-Note that commercially available hydrophone sensors are usually physically larger than the sensors you would typically find in a 4 sensor A-format microphone array. However, since the speed of sound is around 4-5 times faster in water than in air, their effective size is similar, if not smaller. Therefore, the radius of the hydrophone array built for [1] was also made larger than a comparable air domain microphone array for this same reason.
+Note that commercially available hydrophone sensors are usually physically larger than the sensors you would typically find in a 4 sensor A-format microphone array. However, since the speed of sound is around 4-5 times faster in water than in air, their effective size is similar, if not smaller. The radius of the hydrophone array built for [1] was also made larger than a comparable air domain microphone array for this same reason.
 
 <img src="images/HydrophoneArray_GoPro.jpg" alt="HydrophoneArray_GoPro" width="450"/>
 
