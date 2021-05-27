@@ -14,8 +14,8 @@ The CAD files and drawings used for 3D printing the 6 sensor proof-of-concept ar
 
 A real-time audio plugin, the source code for which can be found in the [**audio_plugins**](audio_plugins) folder, was developed for rendering the 6 microphone signals to the 2 binaural channels. It employs the DoA estimation, pitch-shifting, and binauralisation, as described and used for the listening tests conducted in [1].
  
-<img src="images/UltrasonicSuperHearing_PluginGUI.png" alt="UltrasonicSuperHearing_PluginGUI" width="400"/>
-<img src="images/UltrasonicArray_ProcessingDiagram.pdf" alt="UltrasonicArray_ProcessingDiagram" width="600"/>
+<img src="images/UltrasonicSuperHearing_PluginGUI.png" alt="UltrasonicSuperHearing_PluginGUI" width="450"/>
+<img src="images/UltrasonicArray_ProcessingDiagram.png" alt="UltrasonicArray_ProcessingDiagram" width="666"/>
 
 This processing is demonstrated in the following video:
 
