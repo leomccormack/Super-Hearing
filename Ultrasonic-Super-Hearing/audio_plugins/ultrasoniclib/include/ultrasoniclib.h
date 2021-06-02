@@ -19,7 +19,9 @@
  * @brief Implements the signal processing used by the proof-of-concept device
  *        described in [1]
  *
- * @see [1]
+ * @see [1] Pulkki, V., McCormack, L. & Gonzalez, R. 2021. Superhuman spatial
+ *          hearing technology for ultrasonic frequencies. Scientific Reports
+ *          11, 11608 (2021). https://doi.org/10.1038/s41598-021-90829-9
  *
  * @author Leo McCormack
  * @date 06.05.2020

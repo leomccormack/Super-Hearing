@@ -19,9 +19,9 @@ A real-time audio plugin, the source code for which can be found in the [**audio
 
 This processing is demonstrated in the following video:
 
-[![Ultrasonic binaural reproduction]()]()
+[![Ultrasonic binaural reproduction](https://img.youtube.com/vi/HMkZs7a1nQc/0.jpg)](https://www.youtube.com/watch?v=HMkZs7a1nQ)
 (Please wear headphones)
 
 ## References
 
-* [1] Pulkki, V., McCormack, L., and González, R. 2021. [**Superhuman spatial hearing technology for ultrasonic frequencies**](). Accepted at: Nature Scientific Reports.
+* [1] Pulkki, V., McCormack, L. & Gonzalez, R. 2021. [**Superhuman spatial hearing technology for ultrasonic frequencies**](https://www.nature.com/articles/s41598-021-90829-9). Scientific Reports 11, 11608 (2021). https://doi.org/10.1038/s41598-021-90829-9

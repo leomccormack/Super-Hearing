@@ -10,9 +10,9 @@ For the project described in [1], ultrasonic sound sources, which are inaudible 
 
 <img src="Ultrasonic-Super-Hearing/images/UltrasonicArray.png" alt="UltrasonicArray" width="450"/>
 
-[**Video Demo**]()
+[**Video Demo**](https://www.youtube.com/watch?v=HMkZs7a1nQc)
 
-* [1] Pulkki, V., McCormack, L., and González, R. 2021. [**Superhuman spatial hearing technology for ultrasonic frequencies**](). Accepted at: Nature Scientific Reports.
+* [1] Pulkki, V., McCormack, L. & Gonzalez, R. 2021. [**Superhuman spatial hearing technology for ultrasonic frequencies**](https://www.nature.com/articles/s41598-021-90829-9). Scientific Reports 11, 11608 (2021). https://doi.org/10.1038/s41598-021-90829-9
 
 ## [Underwater-Super-Hearing](Underwater-Super-Hearing) 
 
