@@ -19,7 +19,7 @@ A real-time audio plugin, the source code for which can be found in the [**audio
 
 This processing is demonstrated in the following video:
 
-[![Ultrasonic binaural reproduction](https://img.youtube.com/vi/HMkZs7a1nQc/0.jpg)](https://www.youtube.com/watch?v=HMkZs7a1nQ)
+[![Ultrasonic binaural reproduction](https://img.youtube.com/vi/HMkZs7a1nQc/0.jpg)](https://www.youtube.com/watch?v=HMkZs7a1nQc)
 (Please wear headphones)
 
 ## References
