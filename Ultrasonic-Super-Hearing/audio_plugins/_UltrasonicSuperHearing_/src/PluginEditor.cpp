@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 6.0.8
+  Created with Projucer version: 6.1.2
 
   ------------------------------------------------------------------------------
 
@@ -104,6 +104,11 @@ PluginEditor::PluginEditor (PluginProcessor* ownerFilter)
 
     /* tooltips */
     CBpitchShift->setTooltip("Pitch shift");
+
+    addAndMakeVisible (publicationLink);
+    publicationLink.setColour (HyperlinkButton::textColourId, Colours::lightblue);
+    publicationLink.setBounds(getBounds().getWidth()-80, 4, 80, 12);
+    publicationLink.setJustificationType(Justification::centredLeft);
 
     /* Specify screen refresh rate */
     startTimer(TIMER_GUI_RELATED, 40);

@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 6.0.8
+  Created with Projucer version: 6.1.2
 
   ------------------------------------------------------------------------------
 
@@ -83,6 +83,7 @@ private:
 
     /* tooltips */
     SharedResourcePointer<TooltipWindow> tipWindow;
+    HyperlinkButton publicationLink { "(Related Publication)", { "https://leomccormack.github.io/sparta-site/docs/help/related-publications/pulkki2021superhuman.pdf" } };
 
     //[/UserVariables]
 

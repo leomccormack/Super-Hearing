@@ -169,6 +169,10 @@ void ultrasoniclib_initCodec
         pData->codecStatus = CODEC_STATUS_INITIALISING; /* indicate that we want to init */
         SAF_SLEEP(10);
     }
+#ifdef SAF_ENABLE_SOFA_READER_MODULE
+    SAF_SOFA_ERROR_CODES error;
+    saf_sofa_container sofa;
+#endif
 
     /* for progress bar */
     pData->codecStatus = CODEC_STATUS_INITIALISING;
@@ -183,21 +187,43 @@ void ultrasoniclib_initCodec
     smb_pitchShift_create(&(pData->hSmb), 1, 4096, 16, pData->sampleRate);
 
     /* load sofa file or load default hrir data */
+#ifdef SAF_ENABLE_SOFA_READER_MODULE
     if(!pData->useDefaultHRIRsFLAG && pData->sofa_filepath!=NULL){
-        loadSofaFile(pData->sofa_filepath,
-                     &(pData->hrirs),
-                     &(pData->hrir_dirs_deg),
-                     &(pData->N_hrir_dirs),
-                     &(pData->hrir_len),
-                     &(pData->hrir_fs));
+        /* Load SOFA file */
+        error = saf_sofa_open(&sofa, pData->sofa_filepath);
+
+        /* Load defaults instead */
+        if(error!=SAF_SOFA_OK || sofa.nReceivers!=NUM_EARS){
+            pData->useDefaultHRIRsFLAG = 1;
+            saf_print_warning("Unable to load the specified SOFA file, or it contained something other than 2 channels. Using default HRIR data instead.");
+        }
+        else{
+            /* Copy SOFA data */
+            pData->hrir_fs = (int)sofa.DataSamplingRate;
+            pData->hrir_len = sofa.DataLengthIR;
+            pData->N_hrir_dirs = sofa.nSources;
+            pData->hrirs = realloc1d(pData->hrirs, pData->N_hrir_dirs*NUM_EARS*(pData->hrir_len)*sizeof(float));
+            memcpy(pData->hrirs, sofa.DataIR, pData->N_hrir_dirs*NUM_EARS*(pData->hrir_len)*sizeof(float));
+            pData->hrir_dirs_deg = realloc1d(pData->hrir_dirs_deg, pData->N_hrir_dirs*2*sizeof(float));
+            cblas_scopy(pData->N_hrir_dirs, sofa.SourcePosition, 3, pData->hrir_dirs_deg, 2); /* azi */
+            cblas_scopy(pData->N_hrir_dirs, &sofa.SourcePosition[1], 3, &pData->hrir_dirs_deg[1], 2); /* elev */
+        }
+
+        /* Clean-up */
+        saf_sofa_close(&sofa);
     }
-    else{
-        loadSofaFile(NULL, /* setting path to NULL loads default HRIR data */
-                     &(pData->hrirs),
-                     &(pData->hrir_dirs_deg),
-                     &(pData->N_hrir_dirs),
-                     &(pData->hrir_len),
-                     &(pData->hrir_fs));
+#else
+    pData->useDefaultHRIRsFLAG = 1; /* Can only load the default HRIR data */
+#endif
+    if(pData->useDefaultHRIRsFLAG){
+        /* Copy default HRIR data */
+        pData->hrir_fs = __default_hrir_fs;
+        pData->hrir_len = __default_hrir_len;
+        pData->N_hrir_dirs = __default_N_hrir_dirs;
+        pData->hrirs = realloc1d(pData->hrirs, pData->N_hrir_dirs*NUM_EARS*(pData->hrir_len)*sizeof(float));
+        memcpy(pData->hrirs, (float*)__default_hrirs, pData->N_hrir_dirs*NUM_EARS*(pData->hrir_len)*sizeof(float));
+        pData->hrir_dirs_deg = realloc1d(pData->hrir_dirs_deg, pData->N_hrir_dirs*2*sizeof(float));
+        memcpy(pData->hrir_dirs_deg, (float*)__default_hrir_dirs_deg, pData->N_hrir_dirs*2*sizeof(float));
     }
 
     /* estimate the ITDs for each HRIR */
