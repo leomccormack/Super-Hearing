@@ -72,9 +72,6 @@ private:
     PluginProcessor* hVst;
     void* hUS;
     void timerCallback(int timerID) override;
-
-    std::unique_ptr<OpenGLGraphicsContextCustomShader> shader;
-    OpenGLContext openGLContext;
     double progress = 0.0;
     ProgressBar progressbar;
 
