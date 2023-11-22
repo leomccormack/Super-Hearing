@@ -45,7 +45,7 @@ enum {
 
 class PluginProcessor  : public AudioProcessor,
                          public MultiTimer,
-                         public VSTCallbackHandler
+                         public VST2ClientExtensions
 {
 public:
     /* Get functions */
@@ -62,7 +62,8 @@ public:
         if (matches ("wantsChannelCountNotifications"))
             return 1;
         return 0;
-    } 
+    }
+    VST2ClientExtensions* getVST2ClientExtensions() override {return this;}
 
 private:
     void* hUS;              /* ultrasoniclib handle */

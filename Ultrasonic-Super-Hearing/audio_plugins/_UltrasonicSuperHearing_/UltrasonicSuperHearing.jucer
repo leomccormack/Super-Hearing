@@ -13,8 +13,8 @@
               companyEmail="leo.t.mccormack@gmail.com" userNotes="_CRT_SECURE_NO_WARNINGS&#10;_WINSOCK_DEPRECATED_NO_WARNINGS"
               buildAUv3="0" pluginIsMidiEffectPlugin="0" displaySplashScreen="0"
               reportAppUsage="0" splashScreenColour="Dark" buildStandalone="0"
-              enableIAA="0" cppLanguageStandard="14" companyCopyright="Aalto"
-              pluginFormats="buildVST" jucerFormatVersion="1">
+              enableIAA="0" companyCopyright="Aalto" pluginFormats="buildVST"
+              jucerFormatVersion="1">
   <MAINGROUP id="imnfnp" name="UltrasonicSuperHearing">
     <FILE id="fxWg3d" name="PluginEditor.cpp" compile="1" resource="0"
           file="src/PluginEditor.cpp"/>
@@ -282,41 +282,6 @@
         <MODULEPATH id="juce_audio_basics" path="../../../externals/JUCE/modules/"/>
       </MODULEPATHS>
     </VS2017>
-    <VS2015 targetFolder="make/win64/VisualStudio2015/" vstFolder="C://SDKs/VST3 SDK"
-            externalLibraries="saf_mkl_custom_lp64.lib&#10;saf_ipp_custom.lib"
-            vst3Folder="../../../../SDKs/VST3_SDK/" windowsTargetPlatformVersion="8.1"
-            extraDefs="SAF_USE_INTEL_MKL_LP64&#10;SAF_USE_INTEL_IPP&#10;SAF_ENABLE_SOFA_READER_MODULE">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="1" targetName="UltrasonicSuperHearing_debug"
-                       headerPath="../../../../../../externals/Spatial_Audio_Framework/framework/include&#10;../../../../ultrasoniclib/include&#10;../../../../../../externals/VST2_SDK&#10;C:/Program Files (x86)/Intel/oneAPI/mkl/latest/include&#10;C:/Program Files (x86)/Intel/oneAPI/ipp/latest/include"
-                       libraryPath="../../../../../../externals/Spatial_Audio_Framework/dependencies/Win64/lib"
-                       intermediatesPath="../../../obj/Win64_Debug" debugInformationFormat="ProgramDatabase"
-                       enablePluginBinaryCopyStep="0"/>
-        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="UltrasonicSuperHearing"
-                       headerPath="../../../../../../externals/Spatial_Audio_Framework/framework/include&#10;../../../../ultrasoniclib/include&#10;../../../../../../externals/VST2_SDK&#10;C:/Program Files (x86)/Intel/oneAPI/mkl/latest/include&#10;C:/Program Files (x86)/Intel/oneAPI/ipp/latest/include"
-                       libraryPath="../../../../../../externals/Spatial_Audio_Framework/dependencies/Win64/lib"
-                       intermediatesPath="../../../obj/Win64_Release" debugInformationFormat="ProgramDatabase"
-                       enablePluginBinaryCopyStep="0" linkTimeOptimisation="1"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_opengl" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_graphics" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_events" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_data_structures" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_cryptography" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_core" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../externals/JUCE/modules/"/>
-        <MODULEPATH id="juce_osc" path="../../../externals/JUCE/modules/"/>
-      </MODULEPATHS>
-    </VS2015>
     <XCODE_MAC targetFolder="make/MacOSX/Xcode/" vstFolder="../../../../SDKs/VST3 SDK"
                vst3Folder="../../../../SDKs/VST3_SDK/" extraLinkerFlags="-L/usr/local/lib -lsaf_mkl_custom_lp64 -lsaf_ipp_custom&#10;-Wl,-rpath,/usr/local/lib"
                extraCompilerFlags="-pedantic&#10;-W &#10;-Wall&#10;-Wextra"

@@ -44,5 +44,9 @@ add_subdirectory(externals)
 juce_set_vst2_sdk_path(${CMAKE_CURRENT_SOURCE_DIR}/externals/VST2_SDK)
 
 # Add folders containing plugins to build
+option(BUILD_PLUGIN_FORMAT_VST2 "Build VST2 plugins" ON)
+option(BUILD_PLUGIN_FORMAT_VST3 "Build VST3 plugins" OFF)
+option(BUILD_PLUGIN_FORMAT_AU   "Build AU plugins"   OFF)
+option(BUILD_PLUGIN_FORMAT_LV2  "Build LV2 plugins"  OFF)
 add_subdirectory(Ultrasonic-Super-Hearing)
 
