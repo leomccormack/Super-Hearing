@@ -278,13 +278,12 @@ void ultrasoniclib_process
 {
     ultrasoniclib_data *pData = (ultrasoniclib_data*)(hUS);
     int ch, ear, band, t, band_count, enableDiff;
-    float postGainLIN, DoAAveragingCoeff;
+    float postGainLIN;
     float abs_sig[ULTRASONICLIB_NUM_INPUT_CHANNELS], abs_sig_xyz[ULTRASONICLIB_NUM_INPUT_CHANNELS][3];
     float doa_deg[2], doa_xyz[3];
     float norm, diff, rho[3];
 
     postGainLIN = powf(10.0f, pData->postGain_dB/20.0f);
-    DoAAveragingCoeff = pData->doaAveragingCoeff;
     enableDiff = pData->enableDiff;
 
     if ( (FRAME_SIZE==nSamples) && (pData->codecStatus == CODEC_STATUS_INITIALISED) ){
@@ -492,12 +491,14 @@ ULTRASONICLIB_PITCHSHFT_OPTIONS ultrasoniclib_getPitchShiftOption(void* const hU
 }
 
 int ultrasoniclib_getNInputCHrequired(void* const hUS)
-{ 
+{
+    (void)hUS;
     return ULTRASONICLIB_NUM_INPUT_CHANNELS;
 }
 
 int ultrasoniclib_getNOutputCHrequired(void* const hUS)
 {
+    (void)hUS;
     return NUM_EARS;
 }
 
