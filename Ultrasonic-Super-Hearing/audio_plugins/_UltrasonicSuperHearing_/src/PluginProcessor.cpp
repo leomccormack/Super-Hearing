@@ -46,6 +46,14 @@ void PluginProcessor::setParameter (int index, float newValue)
 	}
 }
 
+bool PluginProcessor::isParameterAutomatable (int index) const
+{
+    switch (index) {
+        case k_pitchShift: return false;
+    }
+    return false;
+}
+
 void PluginProcessor::setCurrentProgram (int /*index*/)
 {
 }
