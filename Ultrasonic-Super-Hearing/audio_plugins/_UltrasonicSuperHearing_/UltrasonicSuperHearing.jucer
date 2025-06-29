@@ -16,6 +16,8 @@
               enableIAA="0" companyCopyright="Aalto" pluginFormats="buildVST"
               jucerFormatVersion="1">
   <MAINGROUP id="imnfnp" name="UltrasonicSuperHearing">
+    <FILE id="YfIsid" name="ParameterManager.h" compile="0" resource="0"
+          file="src/ParameterManager.h"/>
     <FILE id="fxWg3d" name="PluginEditor.cpp" compile="1" resource="0"
           file="src/PluginEditor.cpp"/>
     <FILE id="wxRM13" name="PluginEditor.h" compile="0" resource="0" file="src/PluginEditor.h"/>

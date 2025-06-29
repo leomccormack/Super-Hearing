@@ -22,15 +22,14 @@
 
 #include "PluginEditor.h"
 
-PluginEditor::PluginEditor (PluginProcessor* ownerFilter)
-    : AudioProcessorEditor(ownerFilter),progressbar(progress)
+PluginEditor::PluginEditor (PluginProcessor& p)
+    : AudioProcessorEditor(p), processor(p), progressbar(progress)
 {
-    CBpitchShift.reset (new juce::ComboBox ("new combo box"));
+    CBpitchShift = std::make_unique<ComboBoxWithAttachment>(p.parameters, "pitchShift");
     addAndMakeVisible (CBpitchShift.get());
     CBpitchShift->setEditableText (false);
     CBpitchShift->setJustificationType (juce::Justification::centredLeft);
     CBpitchShift->setTextWhenNothingSelected (juce::String());
-    CBpitchShift->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     CBpitchShift->addListener (this);
 
     CBpitchShift->setBounds (98, 78, 112, 19);
@@ -70,18 +69,9 @@ PluginEditor::PluginEditor (PluginProcessor* ownerFilter)
 
     setSize (500, 112);
 
-	hVst = ownerFilter;
-    hUS = hVst->getFXHandle();
-
-    /* add combo box options */
-    CBpitchShift->addItem(TRANS("None"),  ULTRASONICLIB_PITCHSHFT_NONE);
-    CBpitchShift->addItem(TRANS("Down 1 Oct"), ULTRASONICLIB_PITCHSHFT_DOWN_1_OCT);
-    CBpitchShift->addItem(TRANS("Down 2 Oct"), ULTRASONICLIB_PITCHSHFT_DOWN_2_OCT);
-    CBpitchShift->addItem(TRANS("Down 3 Oct"), ULTRASONICLIB_PITCHSHFT_DOWN_3_OCT);
-    CBpitchShift->addItem(TRANS("Use CH7"), ULTRASONICLIB_PITCHSHFT_USE_CHANNEL_7);
+    hUS = processor.getFXHandle();
 
 	/* fetch current configuration */
-    CBpitchShift->setSelectedId((int)ultrasoniclib_getPitchShiftOption(hUS), dontSendNotification);
     s_DoAestimation->setValue((double)ultrasoniclib_getDoAaveragingCoeff(hUS), dontSendNotification);
     s_postGain_dB->setValue((double)ultrasoniclib_getPostGain_dB(hUS), dontSendNotification);
     tb_enableDiff->setToggleState((bool)ultrasoniclib_getEnableDiffuseness(hUS), dontSendNotification);
@@ -283,13 +273,13 @@ void PluginEditor::paint (juce::Graphics& g)
                        Justification::centredLeft, true);
             break;
         case k_warning_NInputCH:
-            g.drawText(TRANS("Insufficient number of input channels (") + String(hVst->getTotalNumInputChannels()) +
+            g.drawText(TRANS("Insufficient number of input channels (") + String(processor.getTotalNumInputChannels()) +
                        TRANS("/") + String(ultrasoniclib_getNInputCHrequired(hUS)) + TRANS(")"),
                        getBounds().getWidth()-225, 6, 530, 11,
                        Justification::centredLeft, true);
             break;
         case k_warning_NOutputCH:
-            g.drawText(TRANS("Insufficient number of output channels (") + String(hVst->getTotalNumOutputChannels()) +
+            g.drawText(TRANS("Insufficient number of output channels (") + String(processor.getTotalNumOutputChannels()) +
                        TRANS("/") + String(ultrasoniclib_getNOutputCHrequired(hUS)) + TRANS(")"),
                        getBounds().getWidth()-225, 6, 530, 11,
                        Justification::centredLeft, true);
@@ -302,12 +292,8 @@ void PluginEditor::resized()
 	repaint();
 }
 
-void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
+void PluginEditor::comboBoxChanged (juce::ComboBox* /*comboBoxThatHasChanged*/)
 {
-    if (comboBoxThatHasChanged == CBpitchShift.get())
-    {
-        ultrasoniclib_setPitchShiftOption(hUS, (ULTRASONICLIB_PITCHSHFT_OPTIONS)CBpitchShift->getSelectedId());
-    }
 }
 
 void PluginEditor::sliderValueChanged (juce::Slider* sliderThatWasMoved)
@@ -356,15 +342,15 @@ void PluginEditor::timerCallback(int timerID)
                 currentWarning = k_warning_supported_fs;
                 repaint(0,0,getWidth(),32);
             }
-            else if ((hVst->getCurrentBlockSize() % ultrasoniclib_getFrameSize()) != 0){
+            else if ((processor.getCurrentBlockSize() % ultrasoniclib_getFrameSize()) != 0){
                 currentWarning = k_warning_frameSize;
                 repaint(0,0,getWidth(),32);
             }
-            else if ((hVst->getCurrentNumInputs() < ultrasoniclib_getNInputCHrequired(hUS))){
+            else if ((processor.getCurrentNumInputs() < ultrasoniclib_getNInputCHrequired(hUS))){
                 currentWarning = k_warning_NInputCH;
                 repaint(0,0,getWidth(),32);
             }
-            else if ((hVst->getCurrentNumOutputs() < ultrasoniclib_getNOutputCHrequired(hUS))){
+            else if ((processor.getCurrentNumOutputs() < ultrasoniclib_getNOutputCHrequired(hUS))){
                 currentWarning = k_warning_NOutputCH;
                 repaint(0,0,getWidth(),32);
             }

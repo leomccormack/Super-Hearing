@@ -23,13 +23,40 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-PluginProcessor::PluginProcessor() : 
+juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+    
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("pitchShift", "PitchShift",
+                                                                  juce::StringArray{"none","Down 1 Oct","Down 2 Oct","Down 3 Oct","Use CH7"}, 0,
+                                                                  AudioParameterChoiceAttributes().withAutomatable(false)));
+    return { params.begin(), params.end() };
+}
+
+void PluginProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+{
+    if (parameterID == "pitchShift"){
+        ultrasoniclib_setPitchShiftOption(hUS, static_cast<ULTRASONICLIB_PITCHSHFT_OPTIONS>(newValue+1.001f));
+    }
+}
+
+void PluginProcessor::setParameterValuesUsingInternalState()
+{
+    setParameterValue("pitchShift", ultrasoniclib_getPitchShiftOption(hUS)-1);
+}
+
+PluginProcessor::PluginProcessor() :
 	AudioProcessor(BusesProperties()
 		.withInput("Input", AudioChannelSet::discreteChannels(6), true)
-	    .withOutput("Output", AudioChannelSet::discreteChannels(2), true))
+	    .withOutput("Output", AudioChannelSet::discreteChannels(2), true)),
+    ParameterManager(*this, createParameterLayout())
 {
 	nSampleRate = 0;
 	ultrasoniclib_create(&hUS);
+    
+    /* Grab defaults */
+    setParameterValuesUsingInternalState();
+    
     startTimer(TIMER_PROCESSING_RELATED, 80);
 }
 
@@ -38,76 +65,13 @@ PluginProcessor::~PluginProcessor()
 	ultrasoniclib_destroy(&hUS);
 }
 
-void PluginProcessor::setParameter (int index, float newValue)
-{
-	switch (index) { 
-        case k_pitchShift:   ultrasoniclib_setPitchShiftOption(hUS, (ULTRASONICLIB_PITCHSHFT_OPTIONS)(int)(newValue*(float)(ULTRASONICLIB_MUM_PITCHSHFT_OPTIONS-1) + 1.5f)); break;
-		default: break;
-	}
-}
-
-bool PluginProcessor::isParameterAutomatable (int index) const
-{
-    switch (index) {
-        case k_pitchShift: return false;
-    }
-    return false;
-}
-
 void PluginProcessor::setCurrentProgram (int /*index*/)
 {
-}
-
-float PluginProcessor::getParameter (int index)
-{
-    switch (index) {
-        case k_pitchShift:    return (float)(ultrasoniclib_getPitchShiftOption(hUS)-1)/(float)(ULTRASONICLIB_MUM_PITCHSHFT_OPTIONS-1);
-		default: return 0.0f;
-	}
-}
-
-int PluginProcessor::getNumParameters()
-{
-	return k_NumOfParameters;
 }
 
 const String PluginProcessor::getName() const
 {
     return JucePlugin_Name;
-}
-
-const String PluginProcessor::getParameterName (int index)
-{
-    switch (index){
-        case k_pitchShift: return "pitchShift";
-		default: return "NULL";
-	}
-}
-
-const String PluginProcessor::getParameterText(int index)
-{
-    switch (index) {
-        case k_pitchShift:
-            switch(ultrasoniclib_getPitchShiftOption(hUS)){
-                case ULTRASONICLIB_PITCHSHFT_NONE:       return "none";
-                case ULTRASONICLIB_PITCHSHFT_DOWN_1_OCT: return "Down 1 Oct";
-                case ULTRASONICLIB_PITCHSHFT_DOWN_2_OCT: return "Down 2 Oct";
-                case ULTRASONICLIB_PITCHSHFT_DOWN_3_OCT: return "Down 3 Oct";
-                case ULTRASONICLIB_PITCHSHFT_USE_CHANNEL_7: return "Use CH7";
-                default: return "NULL";
-            }
-        default: return "NULL";
-    }
-}
-
-const String PluginProcessor::getInputChannelName (int channelIndex) const
-{
-    return String (channelIndex + 1);
-}
-
-const String PluginProcessor::getOutputChannelName (int channelIndex) const
-{
-    return String (channelIndex + 1);
 }
 
 double PluginProcessor::getTailLengthSeconds() const
@@ -130,18 +94,6 @@ const String PluginProcessor::getProgramName (int /*index*/)
     return String();
 }
 
-
-bool PluginProcessor::isInputChannelStereoPair (int /*index*/) const
-{
-    return true;
-}
-
-bool PluginProcessor::isOutputChannelStereoPair (int /*index*/) const
-{
-    return true;
-}
-
-
 bool PluginProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
@@ -158,11 +110,6 @@ bool PluginProcessor::producesMidi() const
    #else
     return false;
    #endif
-}
-
-bool PluginProcessor::silenceInProducesSilenceOut() const
-{
-    return false;
 }
 
 void PluginProcessor::changeProgramName (int /*index*/, const String& /*newName*/)
@@ -213,43 +160,57 @@ bool PluginProcessor::hasEditor() const
 
 AudioProcessorEditor* PluginProcessor::createEditor()
 {
-    return new PluginEditor (this);
+    return new PluginEditor (*this);
 }
 
 //==============================================================================
 void PluginProcessor::getStateInformation (MemoryBlock& destData)
 {
-	/* Create an outer XML element.. */ 
-	XmlElement xml("ULTRASONICLIBAUDIOPLUGINSETTINGS");
- 
-	xml.setAttribute("PITCHSHIFTOPTION", ultrasoniclib_getPitchShiftOption(hUS));
-    xml.setAttribute("DOAAVERAGING", ultrasoniclib_getDoAaveragingCoeff(hUS));
-    xml.setAttribute("POSTGAIN", ultrasoniclib_getPostGain_dB(hUS));
-    xml.setAttribute("ENABLEDIFF", ultrasoniclib_getEnableDiffuseness(hUS));
+    juce::ValueTree state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    xml->setTagName("ULTRASONICLIBAUDIOPLUGINSETTINGS");
+    xml->setAttribute("VersionCode", JucePlugin_VersionCode); // added since 0x10001
     
-	copyXmlToBinary(xml, destData);
+    /* Now for the other DSP object parameters (that have no JUCE parameter counterpart) */
+    xml->setAttribute("DOAAVERAGING", ultrasoniclib_getDoAaveragingCoeff(hUS));
+    xml->setAttribute("POSTGAIN", ultrasoniclib_getPostGain_dB(hUS));
+    xml->setAttribute("ENABLEDIFF", ultrasoniclib_getEnableDiffuseness(hUS));
+
+    /* Save */
+    copyXmlToBinary(*xml, destData);
 }
 
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-	/* This getXmlFromBinary() function retrieves XML from the binary blob */
-    std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-
-	if (xmlState != nullptr) {
-		/* make sure that it's actually the correct XML object */
-		if (xmlState->hasTagName("ULTRASONICLIBAUDIOPLUGINSETTINGS")) {
+    /* Load */
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    if (xmlState != nullptr && xmlState->hasTagName("ULTRASONICLIBAUDIOPLUGINSETTINGS")){
+        if(!xmlState->hasAttribute("VersionCode")){ // pre-0x10001
             if(xmlState->hasAttribute("PITCHSHIFTOPTION"))
                 ultrasoniclib_setPitchShiftOption(hUS, (ULTRASONICLIB_PITCHSHFT_OPTIONS)xmlState->getIntAttribute("PITCHSHIFTOPTION", ULTRASONICLIB_PITCHSHFT_DOWN_3_OCT));
             if(xmlState->hasAttribute("DOAAVERAGING"))
                 ultrasoniclib_setDoAaveragingCoeff(hUS, (float)xmlState->getDoubleAttribute("DOAAVERAGING", 0.9f));
             if(xmlState->hasAttribute("POSTGAIN"))
                 ultrasoniclib_setPostGain_dB(hUS, (float)xmlState->getDoubleAttribute("POSTGAIN", 0.9f));
-
             if(xmlState->hasAttribute("ENABLEDIFF"))
                 ultrasoniclib_setEnableDiffuseness(hUS, xmlState->getIntAttribute("ENABLEDIFF", 0));
 
-            ultrasoniclib_refreshParams(hUS);
+            
+            setParameterValuesUsingInternalState();
         }
+        else if(xmlState->getIntAttribute("VersionCode")>=0x10001){
+            parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+            
+            /* Now for the other DSP object parameters (that have no JUCE parameter counterpart) */
+            if(xmlState->hasAttribute("DOAAVERAGING"))
+                ultrasoniclib_setDoAaveragingCoeff(hUS, (float)xmlState->getDoubleAttribute("DOAAVERAGING", 0.9f));
+            if(xmlState->hasAttribute("POSTGAIN"))
+                ultrasoniclib_setPostGain_dB(hUS, (float)xmlState->getDoubleAttribute("POSTGAIN", 0.9f));
+            if(xmlState->hasAttribute("ENABLEDIFF"))
+                ultrasoniclib_setEnableDiffuseness(hUS, xmlState->getIntAttribute("ENABLEDIFF", 0));
+        }
+        
+        ultrasoniclib_refreshParams(hUS);
 	}
 }
 
