@@ -45,6 +45,11 @@ void PluginProcessor::setParameterValuesUsingInternalState()
     setParameterValue("pitchShift", ultrasoniclib_getPitchShiftOption(hUS)-1);
 }
 
+void PluginProcessor::setInternalStateUsingParameterValues()
+{
+    ultrasoniclib_setPitchShiftOption(hUS, static_cast<ULTRASONICLIB_PITCHSHFT_OPTIONS>(getParameterChoice("pitchShift")+1));
+}
+
 PluginProcessor::PluginProcessor() :
 	AudioProcessor(BusesProperties()
 		.withInput("Input", AudioChannelSet::discreteChannels(6), true)
@@ -210,6 +215,10 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
                 ultrasoniclib_setPostGain_dB(hUS, (float)xmlState->getDoubleAttribute("POSTGAIN", 0.9f));
             if(xmlState->hasAttribute("ENABLEDIFF"))
                 ultrasoniclib_setEnableDiffuseness(hUS, xmlState->getIntAttribute("ENABLEDIFF", 0));
+            
+            /* Many hosts will also trigger parameterChanged() for all parameters after calling setStateInformation() */
+            /* However, some hosts do not. Therefore, it is better to ensure that the internal state is always up-to-date by calling: */
+            setInternalStateUsingParameterValues();
         }
         
         ultrasoniclib_refreshParams(hUS);
