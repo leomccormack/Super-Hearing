@@ -75,6 +75,15 @@ typedef enum _ULTRASONICLIB_PROC_STATUS{
                               *   be reinitialised if needed.*/
 }ULTRASONICLIB_PROC_STATUS;
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_ATOMICS__)
+  typedef _Atomic ULTRASONICLIB_PITCHSHFT_OPTIONS _Atomic_ULTRASONICLIB_PITCHSHFT_OPTIONS;
+  typedef _Atomic ULTRASONICLIB_CODEC_STATUS _Atomic_ULTRASONICLIB_CODEC_STATUS;
+  typedef _Atomic ULTRASONICLIB_PROC_STATUS _Atomic_ULTRASONICLIB_PROC_STATUS;
+#else
+  typedef ULTRASONICLIB_PITCHSHFT_OPTIONS _Atomic_ULTRASONICLIB_PITCHSHFT_OPTIONS;
+  typedef ULTRASONICLIB_CODEC_STATUS _Atomic_ULTRASONICLIB_CODEC_STATUS
+  typedef ULTRASONICLIB_PROC_STATUS _Atomic_ULTRASONICLIB_PROC_STATUS;
+#endif
 
 /* ========================================================================== */
 /*                                 Structures                                 */
@@ -103,10 +112,10 @@ typedef struct _ultrasoniclib
     float r_xyz[NBANDS_ANA][3];       /**< New DoA estimates (as unit Cartesian vectors) */
 
     /* internal */
-    ULTRASONICLIB_CODEC_STATUS codecStatus; /**< see #ULTRASONICLIB_CODEC_STATUS */
-    float progressBar0_1;                   /**< Current initialisation progress between 0..1 */
-    char* progressBarText;                  /**< Current initialisation progress as a string */
-    ULTRASONICLIB_PROC_STATUS procStatus;   /**< see #ULTRASONICLIB_PROC_STATUS */
+    _Atomic_ULTRASONICLIB_CODEC_STATUS codecStatus; /**< see #ULTRASONICLIB_CODEC_STATUS */
+    _Atomic_FLOAT32 progressBar0_1;                 /**< Current initialisation progress between 0..1 */
+    char* progressBarText;                          /**< Current initialisation progress as a string */
+    _Atomic_ULTRASONICLIB_PROC_STATUS procStatus;   /**< see #ULTRASONICLIB_PROC_STATUS */
 
     /* pitch shifting */
     void* hSmb;                          /**< Pitch-shifter handle*/
@@ -131,10 +140,10 @@ typedef struct _ultrasoniclib
     float_complex hrtf_interp[NBANDS_SYN][NUM_EARS]; /**< Interpolated HRTFs per band */
 
     /* user parameters */ 
-    ULTRASONICLIB_PITCHSHFT_OPTIONS pitchShiftOption; /**< see #ULTRASONICLIB_PITCHSHFT_OPTIONS */
-    float doaAveragingCoeff;         /**< Averaging coefficient (1-pole filter) for averaging the DoA estimates over time */
-    float postGain_dB;               /**< Gain to be applied to the output signals, in decibels */
-    int enableDiff;                  /**< 1: enable the amplitude "ducking" based on the diffuseness parameter, 0: disabled */
+    _Atomic_ULTRASONICLIB_PITCHSHFT_OPTIONS pitchShiftOption; /**< see #ULTRASONICLIB_PITCHSHFT_OPTIONS */
+    _Atomic_FLOAT32 doaAveragingCoeff;         /**< Averaging coefficient (1-pole filter) for averaging the DoA estimates over time */
+    _Atomic_FLOAT32 postGain_dB;               /**< Gain to be applied to the output signals, in decibels */
+    _Atomic_INT32 enableDiff;                  /**< 1: enable the amplitude "ducking" based on the diffuseness parameter, 0: disabled */
     
 } ultrasoniclib_data;
 

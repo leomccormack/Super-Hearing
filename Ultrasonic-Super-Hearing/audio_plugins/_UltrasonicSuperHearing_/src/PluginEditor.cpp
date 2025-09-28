@@ -85,7 +85,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     publicationLink.setJustificationType(Justification::centredLeft);
 
     /* Specify screen refresh rate */
-    startTimer(TIMER_GUI_RELATED, 40);
+    startTimer(40);
 
     /* warnings */
     currentWarning = k_warning_none;
@@ -316,43 +316,36 @@ void PluginEditor::buttonClicked (juce::Button* buttonThatWasClicked)
     }
 }
 
-void PluginEditor::timerCallback(int timerID)
+void PluginEditor::timerCallback()
 {
-    switch(timerID){
-        case TIMER_PROCESSING_RELATED:
-            /* handled in PluginProcessor */
-            break;
+    /* parameters whos values can change internally should be periodically refreshed */
 
-        case TIMER_GUI_RELATED:
-            /* parameters whos values can change internally should be periodically refreshed */
+    /* Progress bar */
+    if(ultrasoniclib_getCodecStatus(hUS)==CODEC_STATUS_INITIALISING){
+        addAndMakeVisible(progressbar);
+        progress = (double)ultrasoniclib_getProgressBar0_1(hUS);
+        char text[ULTRASONICLIB_PROGRESSBARTEXT_CHAR_LENGTH];
+        ultrasoniclib_getProgressBarText(hUS, (char*)text);
+        progressbar.setTextToDisplay(String(text));
+    }
+    else
+        removeChildComponent(&progressbar);
 
-            /* Progress bar */
-            if(ultrasoniclib_getCodecStatus(hUS)==CODEC_STATUS_INITIALISING){
-                addAndMakeVisible(progressbar);
-                progress = (double)ultrasoniclib_getProgressBar0_1(hUS);
-                char text[ULTRASONICLIB_PROGRESSBARTEXT_CHAR_LENGTH];
-                ultrasoniclib_getProgressBarText(hUS, (char*)text);
-                progressbar.setTextToDisplay(String(text));
-            }
-            else
-                removeChildComponent(&progressbar);
-
-            /* display warning message, if needed */
-            if ( ((ultrasoniclib_getDAWsamplerate(hUS) < 192e3)) ){
-                currentWarning = k_warning_supported_fs;
-                repaint(0,0,getWidth(),32);
-            }
-            else if ((processor.getCurrentBlockSize() % ultrasoniclib_getFrameSize()) != 0){
-                currentWarning = k_warning_frameSize;
-                repaint(0,0,getWidth(),32);
-            }
-            else if ((processor.getCurrentNumInputs() < ultrasoniclib_getNInputCHrequired(hUS))){
-                currentWarning = k_warning_NInputCH;
-                repaint(0,0,getWidth(),32);
-            }
-            else if ((processor.getCurrentNumOutputs() < ultrasoniclib_getNOutputCHrequired(hUS))){
-                currentWarning = k_warning_NOutputCH;
-                repaint(0,0,getWidth(),32);
-            }
+    /* display warning message, if needed */
+    if ( ((ultrasoniclib_getDAWsamplerate(hUS) < 192e3)) ){
+        currentWarning = k_warning_supported_fs;
+        repaint(0,0,getWidth(),32);
+    }
+    else if ((processor.getCurrentBlockSize() % ultrasoniclib_getFrameSize()) != 0){
+        currentWarning = k_warning_frameSize;
+        repaint(0,0,getWidth(),32);
+    }
+    else if ((processor.getCurrentNumInputs() < ultrasoniclib_getNInputCHrequired(hUS))){
+        currentWarning = k_warning_NInputCH;
+        repaint(0,0,getWidth(),32);
+    }
+    else if ((processor.getCurrentNumOutputs() < ultrasoniclib_getNOutputCHrequired(hUS))){
+        currentWarning = k_warning_NOutputCH;
+        repaint(0,0,getWidth(),32);
     }
 }

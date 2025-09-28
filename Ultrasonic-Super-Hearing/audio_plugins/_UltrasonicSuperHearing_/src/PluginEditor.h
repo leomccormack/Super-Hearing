@@ -34,7 +34,7 @@ typedef enum _WARNINGS{
 }WARNINGS;
 
 class PluginEditor  : public AudioProcessorEditor,
-                      public MultiTimer,
+                      public Timer,
                       public juce::ComboBox::Listener,
                       public juce::Slider::Listener,
                       public juce::Button::Listener
@@ -52,7 +52,7 @@ public:
 private:
     PluginProcessor& processor;
     void* hUS;
-    void timerCallback(int timerID) override;
+    void timerCallback() override;
     double progress = 0.0;
     ProgressBar progressbar;
 
