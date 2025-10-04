@@ -87,7 +87,7 @@ void ultrasoniclib_interpHRTFs
 
 
     /* introduce interaural phase difference */
-    ipd = cmplxf(0.0f, (matlab_fmodf(2.0f*M_PI*(pData->freqVector_syn[band]) * itdInterp + M_PI, 2.0f*M_PI) - M_PI)/2.0f);
+    ipd = cmplxf(0.0f, (matlab_fmodf(2.0f*SAF_PI*(pData->freqVector_syn[band]) * itdInterp + SAF_PI, 2.0f*SAF_PI) - SAF_PI)/2.0f);
     h_intrp[0] = crmulf(cexpf(ipd), magInterp[0]);
     h_intrp[1] = crmulf(conjf(cexpf(ipd)), magInterp[1]);
 }
