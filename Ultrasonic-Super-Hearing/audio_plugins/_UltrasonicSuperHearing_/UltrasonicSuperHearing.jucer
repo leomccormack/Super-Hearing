@@ -6,15 +6,15 @@
               pluginDesc="UltrasonicSuperHearing" pluginManufacturer="AALTO"
               pluginManufacturerCode="LEOM" pluginCode="BATM" pluginIsSynth="0"
               pluginWantsMidiIn="0" pluginProducesMidiOut="0" pluginSilenceInIsSilenceOut="0"
-              pluginEditorRequiresKeys="0" pluginAUExportPrefix="UltrasonicSuperHearingAU"
-              pluginRTASCategory="" aaxIdentifier="com.yourcompany.batmic"
-              pluginAAXCategory="2" buildVST3="0" buildRTAS="0" buildAAX="0"
-              pluginManufacturerEmail="support@yourcompany.com" companyName="Aalto"
-              companyEmail="leo.t.mccormack@gmail.com" userNotes="_CRT_SECURE_NO_WARNINGS&#10;_WINSOCK_DEPRECATED_NO_WARNINGS"
+              pluginEditorRequiresKeys="0" pluginRTASCategory="" buildVST3="0"
+              buildRTAS="0" buildAAX="1" pluginManufacturerEmail="support@yourcompany.com"
+              companyName="Aalto" companyEmail="leo.t.mccormack@gmail.com"
+              userNotes="_CRT_SECURE_NO_WARNINGS&#10;_WINSOCK_DEPRECATED_NO_WARNINGS"
               buildAUv3="0" pluginIsMidiEffectPlugin="0" displaySplashScreen="0"
               reportAppUsage="0" splashScreenColour="Dark" buildStandalone="0"
-              enableIAA="0" companyCopyright="Aalto" pluginFormats="buildVST"
-              jucerFormatVersion="1">
+              enableIAA="0" companyCopyright="Aalto" pluginFormats="buildAAX,buildVST"
+              jucerFormatVersion="1" defines="JucePlugin_AAXDisableDefaultSettingsChunks=1&#10;"
+              pluginAAXCategory="512" pluginVST3Category="Spatial">
   <MAINGROUP id="imnfnp" name="UltrasonicSuperHearing">
     <FILE id="YfIsid" name="ParameterManager.h" compile="0" resource="0"
           file="src/ParameterManager.h"/>
@@ -286,7 +286,7 @@
     </VS2017>
     <XCODE_MAC targetFolder="make/MacOSX/Xcode/" vstFolder="../../../../SDKs/VST3 SDK"
                vst3Folder="../../../../SDKs/VST3_SDK/" extraCompilerFlags="-pedantic&#10;-W &#10;-Wall&#10;-Wextra&#10;-Wno-strict-prototypes"
-               extraDefs="SAF_USE_APPLE_ACCELERATE&#10;SAF_ENABLE_SOFA_READER_MODULE"
+               extraDefs="SAF_USE_APPLE_ACCELERATE_LP64&#10;SAF_ENABLE_SOFA_READER_MODULE"
                xcodeValidArchs="arm64,x86_64">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="UltrasonicSuperHearing_debug"
@@ -313,6 +313,7 @@
         <MODULEPATH id="juce_audio_devices" path="../../../externals/JUCE/modules/"/>
         <MODULEPATH id="juce_audio_basics" path="../../../externals/JUCE/modules/"/>
         <MODULEPATH id="juce_osc" path="../../../externals/JUCE/modules/"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../externals/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="make/LinuxMakefile" extraLinkerFlags="-L/usr/local/lib -lsaf_mkl_custom_lp64 -lsaf_ipp_custom&#10;-Wl,-rpath,/usr/local/lib"
@@ -338,6 +339,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../../externals/JUCE/modules/"/>
         <MODULEPATH id="juce_audio_devices" path="../../../externals/JUCE/modules/"/>
         <MODULEPATH id="juce_audio_basics" path="../../../externals/JUCE/modules/"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../externals/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="make/LinuxMakefileRaspberryPI" extraDefs="SAF_USE_OPEN_BLAS_AND_LAPACKE&#10;SAF_ENABLE_SOFA_READER_MODULE"
@@ -363,6 +365,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../../externals/JUCE/modules/"/>
         <MODULEPATH id="juce_audio_devices" path="../../../externals/JUCE/modules/"/>
         <MODULEPATH id="juce_audio_basics" path="../../../externals/JUCE/modules/"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../externals/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -372,6 +375,8 @@
     <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="0"/>
     <MODULES id="juce_core" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
