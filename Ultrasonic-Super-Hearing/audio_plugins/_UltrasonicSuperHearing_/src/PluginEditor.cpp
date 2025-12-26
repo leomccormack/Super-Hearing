@@ -22,6 +22,43 @@
 
 #include "PluginEditor.h"
 
+namespace ColoursUI {
+    const juce::Colour bgDark1          { 0xff12242e }; //const juce::Colour bgDark1   { 0xff142833 };
+    const juce::Colour bgDark2          { 0xff041316 }; //const juce::Colour bgDark2   { 0xff041518 };
+    const juce::Colour panelFill        { 0x0ef4f4f4 }; //const juce::Colour panelFill { 0x10f4f4f4 };
+    const juce::Colour panelFillLight   { 0x07f4f4f4 }; //const juce::Colour panelFillLight { 0x08f4f4f4 };
+    const juce::Colour panelStroke { 0x67a0a0a0 };
+    const juce::Colour panelStrokeLight { 0x35a0a0a0 };
+    const juce::Colour textWhite { juce::Colours::white };
+    const juce::Colour borderGrey { 0xffb9b9b9 };
+    const juce::Colour accentCyan { 0xff00d8df };
+    const juce::Colour accentOrange { 0xffdf8400 };
+}
+
+inline void drawPanel(juce::Graphics& g, juce::Rectangle<int> r, juce::Colour fill, juce::Colour stroke, int thickness = 1)
+{
+    g.setColour(fill);
+    g.fillRect(r);
+    g.setColour(stroke);
+    g.drawRect(r, thickness);
+}
+
+inline void drawVerticalGradient(juce::Graphics& g, juce::Rectangle<int> r, juce::Colour top, juce::Colour bottom)
+{
+    g.setGradientFill(juce::ColourGradient(top, r.getX(), r.getY(), bottom, r.getX(), r.getBottom(), false));
+    g.fillRect(r);
+}
+
+inline void drawLabel(juce::Graphics& g, juce::Rectangle<int> r, const juce::String& text, float size,
+                      juce::Justification just = juce::Justification::centredLeft, juce::Colour colour = ColoursUI::textWhite,
+                      juce::Font::FontStyleFlags style = juce::Font::bold)
+{
+    g.setColour(colour);
+    g.setFont(juce::FontOptions(size, style));
+    g.drawText(text, r, just, true);
+}
+
+
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor(p), processor(p), progressbar(progress)
 {
@@ -71,7 +108,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     hUS = processor.getFXHandle();
 
-	/* fetch current configuration */
+    /* fetch current configuration */
     s_DoAestimation->setValue((double)ultrasoniclib_getDoAaveragingCoeff(hUS), dontSendNotification);
     s_postGain_dB->setValue((double)ultrasoniclib_getPostGain_dB(hUS), dontSendNotification);
     tb_enableDiff->setToggleState((bool)ultrasoniclib_getEnableDiffuseness(hUS), dontSendNotification);
@@ -93,168 +130,56 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
 PluginEditor::~PluginEditor()
 {
-    CBpitchShift = nullptr;
-    s_DoAestimation = nullptr;
-    s_postGain_dB = nullptr;
-    tb_enableDiff = nullptr;
+    stopTimer();
 }
 
 void PluginEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::white);
+    using namespace ColoursUI;
 
+    /* Background gradients */
+    drawVerticalGradient(g, {0, 30, 530, 40}, bgDark1, bgDark2);
+    drawVerticalGradient(g, {0, 70, 498, 42}, bgDark2, bgDark1);
+
+    /* Top rounded bar */
     {
-        int x = 0, y = 70, width = 498, height = 42;
-        juce::Colour fillColour1 = juce::Colour (0xff1c3949), fillColour2 = juce::Colour (0xff071e22);
-        g.setGradientFill (juce::ColourGradient (fillColour1,
-                                             8.0f - 0.0f + x,
-                                             120.0f - 70.0f + y,
-                                             fillColour2,
-                                             8.0f - 0.0f + x,
-                                             96.0f - 70.0f + y,
-                                             false));
-        g.fillRect (x, y, width, height);
+        juce::Rectangle<float> r {1.f, 2.f, 498.f, 31.f};
+        g.setGradientFill(juce::ColourGradient(bgDark2,
+                                               r.getX(), r.getBottom(),
+                                               bgDark1,
+                                               r.getRight() + 30.f, r.getY(),
+                                               false));
+        g.fillRoundedRectangle(r, 5.f);
+        g.setColour(borderGrey);
+        g.drawRoundedRectangle(r, 5.f, 2.f);
     }
 
-    {
-        int x = 10, y = 71, width = 476, height = 33;
-        juce::Colour fillColour = juce::Colour (0x10c7c7c7);
-        juce::Colour strokeColour = juce::Colour (0x1fffffff);
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-        g.setColour (strokeColour);
-        g.drawRect (x, y, width, height, 1);
+    /* Panels */
+    drawPanel(g, {10,40,476,32}, panelFill, panelStroke);
+    drawPanel(g, {10,71,476,33}, panelFill, panelStroke);
 
-    }
+    /* Borders (height = 120 px) */
+    g.setColour(borderGrey);
+    g.drawRect({0,   0, 532, 2}, 2);
+    g.drawRect({0,   0,   2,120}, 2);
+    g.drawRect({498, 3,   6,117}, 2);
+    g.drawRect({0, 110, 512, 2}, 2);
 
-    {
-        int x = 0, y = 30, width = 530, height = 40;
-        juce::Colour fillColour1 = juce::Colour (0xff1c3949), fillColour2 = juce::Colour (0xff071e22);
-        g.setGradientFill (juce::ColourGradient (fillColour1,
-                                             8.0f - 0.0f + x,
-                                             32.0f - 30.0f + y,
-                                             fillColour2,
-                                             8.0f - 0.0f + x,
-                                             56.0f - 30.0f + y,
-                                             false));
-        g.fillRect (x, y, width, height);
-    }
+    /* Title */
+    drawLabel(g, {16,1,272,32}, "UltrasonicSuperHearing", 18.8f);
 
-    {
-        float x = 1.0f, y = 2.0f, width = 498.0f, height = 31.0f;
-        juce::Colour fillColour1 = juce::Colour (0xff061c20), fillColour2 = juce::Colour (0xff1c3949);
-        juce::Colour strokeColour = juce::Colour (0xffb9b9b9);
-        g.setGradientFill (juce::ColourGradient (fillColour1,
-                                             0.0f - 1.0f + x,
-                                             32.0f - 2.0f + y,
-                                             fillColour2,
-                                             528.0f - 1.0f + x,
-                                             32.0f - 2.0f + y,
-                                             false));
-        g.fillRoundedRectangle (x, y, width, height, 5.000f);
-        g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 5.000f, 2.000f);
-    }
+    /* Labels */
+    drawLabel(g, {16,40,144,30}, "DoA Averaging:", 15.f);
+    drawLabel(g, {15,71,96,35},  "Pitch Shift:",   15.f);
+    drawLabel(g, {232,72,144,30}, "Post Gain (dB)", 15.f);
+    drawLabel(g, {319,40,144,30}, "Enable Diff:",   15.f);
 
-    {
-        int x = 10, y = 40, width = 476, height = 32;
-        juce::Colour fillColour = juce::Colour (0x10c7c7c7);
-        juce::Colour strokeColour = juce::Colour (0x1fffffff);
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-        g.setColour (strokeColour);
-        g.drawRect (x, y, width, height, 1);
-
-    }
-
-    {
-        int x = 16, y = 1, width = 272, height = 32;
-        juce::String text (TRANS("UltrasonicSuperHearing"));
-        juce::Colour fillColour = juce::Colours::white;
-        g.setColour (fillColour);
-        g.setFont (juce::FontOptions (18.80f, juce::Font::plain).withStyle ("Bold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
-        int x = 0, y = 0, width = 532, height = 2;
-        juce::Colour strokeColour = juce::Colour (0xffb9b9b9);
-        g.setColour (strokeColour);
-        g.drawRect (x, y, width, height, 2);
-
-    }
-
-    {
-        int x = 0, y = 0, width = 2, height = 120;
-        juce::Colour strokeColour = juce::Colour (0xffb9b9b9);
-        g.setColour (strokeColour);
-        g.drawRect (x, y, width, height, 2);
-
-    }
-
-    {
-        int x = 498, y = 3, width = 6, height = 117;
-        juce::Colour strokeColour = juce::Colour (0xffb9b9b9);
-        g.setColour (strokeColour);
-        g.drawRect (x, y, width, height, 2);
-
-    }
-
-    {
-        int x = 0, y = 110, width = 512, height = 2;
-        juce::Colour strokeColour = juce::Colour (0xffb9b9b9);
-        g.setColour (strokeColour);
-        g.drawRect (x, y, width, height, 2);
-
-    }
-
-    {
-        int x = 15, y = 71, width = 96, height = 35;
-        juce::String text (TRANS("Pitch Shift:"));
-        juce::Colour fillColour = juce::Colours::white;
-        g.setColour (fillColour);
-        g.setFont (juce::FontOptions (15.00f, juce::Font::plain).withStyle ("Bold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
-        int x = 16, y = 40, width = 144, height = 30;
-        juce::String text (TRANS("DoA Averaging:"));
-        juce::Colour fillColour = juce::Colours::white;
-        g.setColour (fillColour);
-        g.setFont (juce::FontOptions (15.00f, juce::Font::plain).withStyle ("Bold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
-        int x = 232, y = 72, width = 144, height = 30;
-        juce::String text (TRANS("Post Gain (dB)"));
-        juce::Colour fillColour = juce::Colours::white;
-        g.setColour (fillColour);
-        g.setFont (juce::FontOptions (15.00f, juce::Font::plain).withStyle ("Bold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-
-    {
-        int x = 319, y = 40, width = 144, height = 30;
-        juce::String text (TRANS("Enable Diff:"));
-        juce::Colour fillColour = juce::Colours::white;
-        g.setColour (fillColour);
-        g.setFont (juce::FontOptions (15.00f, juce::Font::plain).withStyle ("Bold"));
-        g.drawText (text, x, y, width, height,
-                    juce::Justification::centredLeft, true);
-    }
-    
     /* display version/date built */
-	g.setColour(Colours::white);
-	g.setFont(juce::FontOptions (11.00f, Font::plain));
-	g.drawText(TRANS("Ver ") + JucePlugin_VersionString + BUILD_VER_SUFFIX + TRANS(", Build Date ") + __DATE__ + TRANS(" "),
-		230, 16, 530, 11,
-		Justification::centredLeft, true);
+    g.setColour(Colours::white);
+    g.setFont(juce::FontOptions (11.00f, Font::plain));
+    g.drawText(TRANS("Ver ") + JucePlugin_VersionString + BUILD_VER_SUFFIX + TRANS(", Build Date ") + __DATE__ + TRANS(" "),
+        230, 16, 530, 11,
+        Justification::centredLeft, true);
 
     /* display warning message */
     g.setColour(Colours::red);
@@ -289,7 +214,7 @@ void PluginEditor::paint (juce::Graphics& g)
 
 void PluginEditor::resized()
 {
-	repaint();
+    repaint();
 }
 
 void PluginEditor::comboBoxChanged (juce::ComboBox* /*comboBoxThatHasChanged*/)

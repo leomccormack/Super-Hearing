@@ -27,7 +27,7 @@
 # error "AAX Default Settings Chunk is enabled. This may override parameter defaults."
 #endif
 
-juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout()
+static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     
@@ -54,89 +54,39 @@ void PluginProcessor::setInternalStateUsingParameterValues()
     ultrasoniclib_setPitchShiftOption(hUS, static_cast<ULTRASONICLIB_PITCHSHFT_OPTIONS>(getParameterChoice("pitchShift")+1));
 }
 
-PluginProcessor::PluginProcessor() :
-	AudioProcessor(BusesProperties()
-		.withInput("Input", AudioChannelSet::discreteChannels(6), true)
-	    .withOutput("Output", AudioChannelSet::discreteChannels(2), true)),
-    ParameterManager(*this, createParameterLayout())
+PluginProcessor::PluginProcessor()
+    : PluginProcessorBase(
+        BusesProperties()
+            .withInput("Input", AudioChannelSet::discreteChannels(6), true)
+            .withOutput("Output", AudioChannelSet::discreteChannels(2), true),
+        createParameterLayout())
 {
-	nSampleRate = 0;
-	ultrasoniclib_create(&hUS);
-    
-    /* Grab defaults */
-    setParameterValuesUsingInternalState();
+    nSampleRate = 0;
+    ultrasoniclib_create(&hUS);
+    addParameterListeners(this);
     
     startTimer(80);
 }
 
 PluginProcessor::~PluginProcessor()
 {
-	ultrasoniclib_destroy(&hUS);
-}
-
-void PluginProcessor::setCurrentProgram (int /*index*/)
-{
-}
-
-const String PluginProcessor::getName() const
-{
-    return JucePlugin_Name;
-}
-
-double PluginProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
-
-int PluginProcessor::getNumPrograms()
-{
-    return 1;
-}
-
-int PluginProcessor::getCurrentProgram()
-{
-    return 0;
-}
-
-const String PluginProcessor::getProgramName (int /*index*/)
-{
-    return String();
-}
-
-bool PluginProcessor::acceptsMidi() const
-{
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-bool PluginProcessor::producesMidi() const
-{
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-void PluginProcessor::changeProgramName (int /*index*/, const String& /*newName*/)
-{
+    removeParameterListeners(this);
+    ultrasoniclib_destroy(&hUS);
 }
 
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    if(firstInit){
+        /* Need to grab defaults */
+        setParameterValuesUsingInternalState();
+        firstInit = false;
+    }
     nHostBlockSize = samplesPerBlock;
     nNumInputs =  jmin(getTotalNumInputChannels(), 256);
     nNumOutputs = jmin(getTotalNumOutputChannels(), 256);
     nSampleRate = (int)(sampleRate + 0.5);
 
-	ultrasoniclib_init(hUS, nSampleRate);
-}
-
-void PluginProcessor::releaseResources()
-{
+    ultrasoniclib_init(hUS, nSampleRate);
 }
 
 void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& /*midiMessages*/)
@@ -150,23 +100,17 @@ void PluginProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& /*mid
     float* pFrameData[256];
     int frameSize = ultrasoniclib_getFrameSize();
 
-	if(nCurrentBlockSize % frameSize == 0) { /* divisible by frame size */
+    if(nCurrentBlockSize % frameSize == 0) { /* divisible by frame size */
         for(int frame = 0; frame < nCurrentBlockSize/frameSize; frame++) {
             for(int ch = 0; ch < jmin(buffer.getNumChannels(), 256); ch++)
                 pFrameData[ch] = &bufferData[ch][frame*frameSize];
             
-			/* perform processing */
-			ultrasoniclib_process(hUS, pFrameData, pFrameData, nNumInputs, nNumOutputs, frameSize);
-		}
-	}
-	else
-		buffer.clear();
-}
-
-//==============================================================================
-bool PluginProcessor::hasEditor() const
-{
-    return true; 
+            /* perform processing */
+            ultrasoniclib_process(hUS, pFrameData, pFrameData, nNumInputs, nNumOutputs, frameSize);
+        }
+    }
+    else
+        buffer.clear();
 }
 
 AudioProcessorEditor* PluginProcessor::createEditor()
@@ -174,7 +118,6 @@ AudioProcessorEditor* PluginProcessor::createEditor()
     return new PluginEditor (*this);
 }
 
-//==============================================================================
 void PluginProcessor::getStateInformation (MemoryBlock& destData)
 {
     juce::ValueTree state = parameters.copyState();
@@ -210,7 +153,13 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
             setParameterValuesUsingInternalState();
         }
         else if(xmlState->getIntAttribute("VersionCode")>=0x10001){
+            removeParameterListeners(this);
             parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+            addParameterListeners(this);
+            
+            /* Many hosts will also trigger parameterChanged() for all parameters after calling setStateInformation() */
+            /* However, some hosts do not. Therefore, it is better to ensure that the internal state is always up-to-date by calling: */
+            setInternalStateUsingParameterValues();
             
             /* Now for the other DSP object parameters (that have no JUCE parameter counterpart) */
             if(xmlState->hasAttribute("DOAAVERAGING"))
@@ -219,17 +168,12 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
                 ultrasoniclib_setPostGain_dB(hUS, (float)xmlState->getDoubleAttribute("POSTGAIN", 0.9f));
             if(xmlState->hasAttribute("ENABLEDIFF"))
                 ultrasoniclib_setEnableDiffuseness(hUS, xmlState->getIntAttribute("ENABLEDIFF", 0));
-            
-            /* Many hosts will also trigger parameterChanged() for all parameters after calling setStateInformation() */
-            /* However, some hosts do not. Therefore, it is better to ensure that the internal state is always up-to-date by calling: */
-            setInternalStateUsingParameterValues();
         }
         
         ultrasoniclib_refreshParams(hUS);
-	}
+    }
 }
 
-//==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
