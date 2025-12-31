@@ -55,5 +55,6 @@ option(BUILD_PLUGIN_FORMAT_AU   "Build AU plugins"   OFF)
 option(BUILD_PLUGIN_FORMAT_LV2  "Build LV2 plugins"  OFF)
 option(BUILD_PLUGIN_FORMAT_AAX  "Build AAX plugins"  OFF)
 option(BUILD_PLUGIN_FORMAT_STANDALONE  "Build standalone versions of the plugins"  OFF)
+
 add_subdirectory(Ultrasonic-Super-Hearing)
 

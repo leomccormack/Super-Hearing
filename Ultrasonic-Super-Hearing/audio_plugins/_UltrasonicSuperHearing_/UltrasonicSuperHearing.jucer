@@ -16,6 +16,12 @@
               jucerFormatVersion="1" defines="JucePlugin_AAXDisableDefaultSettingsChunks=1&#10;"
               pluginAAXCategory="512" pluginVST3Category="Spatial" pluginCharacteristicsValue="pluginAAXDisableMultiMono">
   <MAINGROUP id="imnfnp" name="UltrasonicSuperHearing">
+    <GROUP id="{C73A0557-FC9A-E262-85E1-B65D22BF3530}" name="Fonts">
+      <FILE id="ec2pp5" name="Inter-Bold.ttf" compile="0" resource="1" file="src/Fonts/Inter-Bold.ttf"/>
+      <FILE id="jY0iFy" name="Inter-Regular.ttf" compile="0" resource="1"
+            file="src/Fonts/Inter-Regular.ttf"/>
+      <FILE id="IZv8dG" name="LICENSE.txt" compile="0" resource="1" file="src/Fonts/LICENSE.txt"/>
+    </GROUP>
     <FILE id="YfIsid" name="ParameterManager.h" compile="0" resource="0"
           file="src/ParameterManager.h"/>
     <FILE id="Wa2hfm" name="PluginProcessorBase.h" compile="0" resource="0"

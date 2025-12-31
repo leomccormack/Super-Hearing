@@ -29,5 +29,9 @@ if (BUILD_PLUGIN_FORMAT_STANDALONE)
     message("--  Building Standalone versions")
 endif()
 
+juce_add_binary_data (GUI_fonts SOURCES
+    _UltrasonicSuperHearing_/src/Fonts/Inter-Bold.ttf
+    _UltrasonicSuperHearing_/src/Fonts/Inter-Regular.ttf)
+
 # Then the plugins
 add_subdirectory(_UltrasonicSuperHearing_)

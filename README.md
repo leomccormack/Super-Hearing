@@ -55,14 +55,14 @@ sudo apt-get install libhdf5-dev libnetcdf-dev libnetcdff-dev
 The plug-in may be built with CMake (version 3.15 or higher) via:
  ```
  mkdir build
- cmake -S . -B build -DSAF_ENABLE_SOFA_READER_MODULE=1
+ cmake -S . -B build
  cd build
  make
  ```
 
 Or for, e.g., Visual Studio users:
 ```
-cmake -S . -B build -G "Visual Studio 15 Win64" -DSAF_ENABLE_SOFA_READER_MODULE=1 
+cmake -S . -B build -G "Visual Studio 15 Win64" 
 cd build
 msbuild ALL_BUILD.vcxproj /p:Configuration=Release /m
 ```
