@@ -292,30 +292,33 @@ void PluginEditor::paint (juce::Graphics& g)
         Justification::centredLeft, true);
 
     /* display warning message */
-    g.setColour(Colours::red);
     g.setFont(juce::FontOptions (11.00f, Font::plain));
     switch (currentWarning){
         case k_warning_none:
             break;
         case k_warning_supported_fs:
+            g.setColour(Colours::red);
             g.drawText(TRANS("Set sample rate to 192kHz"),
                        getBounds().getWidth()-225, 6, 530, 11,
                        Justification::centredLeft, true);
             break;
-        case k_warning_frameSize:
-            g.drawText(TRANS("Set frame size to multiple of ") + String(ultrasoniclib_getFrameSize()),
-                       getBounds().getWidth()-225, 6, 530, 11,
-                       Justification::centredLeft, true);
-            break;
         case k_warning_NInputCH:
+            g.setColour(Colours::red);
             g.drawText(TRANS("Insufficient number of input channels (") + String(processor.getTotalNumInputChannels()) +
                        TRANS("/") + String(ultrasoniclib_getNInputCHrequired(hUS)) + TRANS(")"),
                        getBounds().getWidth()-225, 6, 530, 11,
                        Justification::centredLeft, true);
             break;
         case k_warning_NOutputCH:
+            g.setColour(Colours::red);
             g.drawText(TRANS("Insufficient number of output channels (") + String(processor.getTotalNumOutputChannels()) +
                        TRANS("/") + String(ultrasoniclib_getNOutputCHrequired(hUS)) + TRANS(")"),
+                       getBounds().getWidth()-225, 6, 530, 11,
+                       Justification::centredLeft, true);
+            break;
+        case k_warning_frameSize:
+            g.setColour(Colours::yellow);
+            g.drawText(TRANS("Set host block size to \"") + String(ultrasoniclib_getFrameSize()) + TRANS("\" for lowest latency"),
                        getBounds().getWidth()-225, 6, 530, 11,
                        Justification::centredLeft, true);
             break;
@@ -371,16 +374,20 @@ void PluginEditor::timerCallback()
         currentWarning = k_warning_supported_fs;
         repaint(0,0,getWidth(),32);
     }
-    else if ((processor.getCurrentBlockSize() % ultrasoniclib_getFrameSize()) != 0){
-        currentWarning = k_warning_frameSize;
-        repaint(0,0,getWidth(),32);
-    }
     else if ((processor.getCurrentNumInputs() < ultrasoniclib_getNInputCHrequired(hUS))){
         currentWarning = k_warning_NInputCH;
         repaint(0,0,getWidth(),32);
     }
     else if ((processor.getCurrentNumOutputs() < ultrasoniclib_getNOutputCHrequired(hUS))){
         currentWarning = k_warning_NOutputCH;
+        repaint(0,0,getWidth(),32);
+    }
+    else if ((processor.getCurrentBlockSize() != ultrasoniclib_getFrameSize())){
+        currentWarning = k_warning_frameSize;
+        repaint(0,0,getWidth(),32);
+    }
+    else if(currentWarning){
+        currentWarning = k_warning_none;
         repaint(0,0,getWidth(),32);
     }
 }

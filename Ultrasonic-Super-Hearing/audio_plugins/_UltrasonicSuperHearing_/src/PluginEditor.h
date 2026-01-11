@@ -26,11 +26,14 @@
 #include "PluginProcessor.h"
 
 typedef enum _WARNINGS{
+    /* Very problematic warnings (shown in red) */
     k_warning_none,
     k_warning_supported_fs,
-    k_warning_frameSize,
     k_warning_NInputCH,
-    k_warning_NOutputCH
+    k_warning_NOutputCH,
+    
+    /* Less severe warnings (shown in yellow) */
+    k_warning_frameSize
 }WARNINGS;
 
 class PluginEditor  : public AudioProcessorEditor,
